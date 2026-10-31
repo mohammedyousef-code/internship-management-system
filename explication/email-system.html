@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système d'Emails - Backend Laravel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .flow-box {
+            flex: 1;
+            min-width: 180px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .flow-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: #667eea;
+            flex-shrink: 0;
+        }
+
+        .step1 {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+        }
+
+        .step2 {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+        }
+
+        .step3 {
+            background: linear-gradient(135deg, #F093FB, #F5576C);
+        }
+
+        .step4 {
+            background: linear-gradient(135deg, #4FACFE, #00F2FE);
+        }
+
+        .step5 {
+            background: linear-gradient(135deg, #43E97B, #38F9D7);
+        }
+
+        .email-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .email-card {
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .email-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .email-candidature {
+            border-color: #28a745;
+        }
+
+        .email-stage {
+            border-color: #007bff;
+        }
+
+        .email-rapport {
+            border-color: #ffc107;
+        }
+
+        .email-system {
+            border-color: #6f42c1;
+        }
+
+        .email-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .email-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .email-trigger {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .email-dest {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .code-block .keyword {
+            color: #fc8181;
+        }
+
+        .code-block .string {
+            color: #fbd38d;
+        }
+
+        .code-block .function {
+            color: #63b3ed;
+        }
+
+        .code-block .comment {
+            color: #a0aec0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-left: 5px solid #f39c12;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #2d3436;
+        }
+
+        .highlight-box h4 {
+            color: #d63031;
+            margin-bottom: 10px;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .config-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .column-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+
+        .column-box h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        thead th {
+            padding: 15px;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        tbody td {
+            padding: 12px 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-purple {
+            background: #e2d9f3;
+            color: #5a32a3;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .section-title {
+                font-size: 1.4em;
+            }
+
+            .flow-diagram {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📧 Système d'Emails Backend</h1>
+        <p class="subtitle">Explication Complète du Système de Notifications par Email - Laravel</p>
+
+        <!-- Section 1: Vue d'ensemble -->
+        <div class="section">
+            <div class="section-title">🌐 Vue d'Ensemble du Système</div>
+
+            <div class="highlight-box">
+                <h4>🎯 Concept Principal</h4>
+                <p>Laravel utilise le système <strong>Mailable</strong> pour gérer les emails. Chaque type d'email est
+                    une classe qui définit:</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>✉️ Le sujet de l'email</li>
+                    <li>📄 Le template Blade utilisé</li>
+                    <li>📊 Les données passées au template</li>
+                    <li>📎 Les pièces jointes (si nécessaire)</li>
+                </ul>
+            </div>
+
+            <div class="flow-diagram">
+                <div class="flow-box step1">
+                    <div style="font-size: 2em;">⚡</div>
+                    <div>ÉVÉNEMENT</div>
+                    <small>(Candidature acceptée, etc.)</small>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box step2">
+                    <div style="font-size: 2em;">📦</div>
+                    <div>MAILABLE CLASS</div>
+                    <small>(app/Mail/...)</small>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box step3">
+                    <div style="font-size: 2em;">🎨</div>
+                    <div>BLADE TEMPLATE</div>
+                    <small>(resources/views/emails/...)</small>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box step4">
+                    <div style="font-size: 2em;">🚀</div>
+                    <div>ENVOI SMTP</div>
+                    <small>(Mailer configuré)</small>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box step5">
+                    <div style="font-size: 2em;">📬</div>
+                    <div>DESTINATAIRE</div>
+                    <small>(Email reçu)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Les 10 Types d'Emails -->
+        <div class="section">
+            <div class="section-title">📨 Les 10 Types d'Emails du Système</div>
+
+            <div class="email-grid">
+                <!-- Email 1 -->
+                <div class="email-card email-candidature">
+                    <div class="email-icon">🎉</div>
+                    <div class="email-title">Candidature Acceptée</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Admin accepte une candidature
+                    </div>
+                    <p><span class="email-dest">→ Stagiaire</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Info stage, données encadrant, dates
+                    </p>
+                </div>
+
+                <!-- Email 2 -->
+                <div class="email-card email-candidature">
+                    <div class="email-icon">📝</div>
+                    <div class="email-title">Confirmation Candidature</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Stagiaire postule à une offre
+                    </div>
+                    <p><span class="email-dest">→ Stagiaire</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Confirmation réception, titre offre
+                    </p>
+                </div>
+
+                <!-- Email 3 -->
+                <div class="email-card email-candidature">
+                    <div class="email-icon">❌</div>
+                    <div class="email-title">Candidature Refusée</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Admin refuse une candidature
+                    </div>
+                    <p><span class="email-dest">→ Stagiaire</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Message de refus, encouragement
+                    </p>
+                </div>
+
+                <!-- Email 4 -->
+                <div class="email-card email-stage">
+                    <div class="email-icon">👨‍🎓</div>
+                    <div class="email-title">Nouveau Stagiaire</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Attribution d'un stagiaire
+                    </div>
+                    <p><span class="email-dest">→ Encadrant</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Info stagiaire, stage, contacts
+                    </p>
+                </div>
+
+                <!-- Email 5 -->
+                <div class="email-card email-system">
+                    <div class="email-icon">🔑</div>
+                    <div class="email-title">Welcome Encadrant</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Admin crée un encadrant
+                    </div>
+                    <p><span class="email-dest">→ Encadrant</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Identifiants, mot de passe temporaire
+                    </p>
+                </div>
+
+                <!-- Email 6 -->
+                <div class="email-card email-rapport">
+                    <div class="email-icon">📄</div>
+                    <div class="email-title">Rapport Déposé</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Stagiaire dépose un rapport
+                    </div>
+                    <p><span class="email-dest">→ Encadrant</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Notification nouveau rapport à valider
+                    </p>
+                </div>
+
+                <!-- Email 7 -->
+                <div class="email-card email-rapport">
+                    <div class="email-icon">✅</div>
+                    <div class="email-title">Rapport Validé</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Encadrant valide le rapport
+                    </div>
+                    <p><span class="email-dest">→ Stagiaire</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Confirmation validation
+                    </p>
+                </div>
+
+                <!-- Email 8 -->
+                <div class="email-card email-rapport">
+                    <div class="email-icon">📝</div>
+                    <div class="email-title">Rapport à Corriger</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Encadrant demande corrections
+                    </div>
+                    <p><span class="email-dest">→ Stagiaire</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Commentaires, corrections demandées
+                    </p>
+                </div>
+
+                <!-- Email 9 -->
+                <div class="email-card email-stage">
+                    <div class="email-icon">⭐</div>
+                    <div class="email-title">Évaluation Disponible</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Encadrant crée une évaluation
+                    </div>
+                    <p><span class="email-dest">→ Stagiaire</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Note, commentaires évaluation
+                    </p>
+                </div>
+
+                <!-- Email 10 -->
+                <div class="email-card email-stage">
+                    <div class="email-icon">⏰</div>
+                    <div class="email-title">Rappel Fin Stage</div>
+                    <div class="email-trigger">
+                        <strong>Déclencheur:</strong> Cron job (7 jours avant fin)
+                    </div>
+                    <p><span class="email-dest">→ Stagiaire</span></p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Contient: Rappel fin stage, dernières tâches
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Structure d'un Mailable -->
+        <div class="section">
+            <div class="section-title">🏗️ Structure d'un Mailable</div>
+
+            <div class="config-section">
+                <h3>Exemple: CandidatureAcceptee.php</h3>
+                <div class="code-block"><span class="comment">// app/Mail/CandidatureAcceptee.php</span>
+
+                    <span class="keyword">namespace</span> App\Mail;
+
+                    <span class="keyword">use</span> App\Models\{Candidature, Stage};
+                    <span class="keyword">use</span> Illuminate\Mail\Mailable;
+                    <span class="keyword">use</span> Illuminate\Mail\Mailables\{Content, Envelope, Address};
+
+                    <span class="keyword">class</span> <span class="function">CandidatureAcceptee</span> <span
+                        class="keyword">extends</span> Mailable
+                    {
+                    <span class="keyword">public</span> $candidature;
+                    <span class="keyword">public</span> $stage;
+
+                    <span class="comment">// 1. CONSTRUCTEUR - Reçoit les données</span>
+                    <span class="keyword">public function</span> <span class="function">__construct</span>(Candidature
+                    $candidature, Stage $stage)
+                    {
+                    $this-&gt;candidature = $candidature;
+                    $this-&gt;stage = $stage;
+                    $this-&gt;encadrant = $stage-&gt;encadrant;
+                    }
+
+                    <span class="comment">// 2. ENVELOPE - Définit l'expéditeur et le sujet</span>
+                    <span class="keyword">public function</span> <span class="function">envelope</span>(): Envelope
+                    {
+                    <span class="keyword">return new</span> Envelope(
+                    from: <span class="keyword">new</span> Address(config(<span
+                        class="string">'mail.from.address'</span>), config(<span
+                        class="string">'mail.from.name'</span>)),
+                    subject: <span class="string">'🎉 Candidature acceptée - '</span> . $this-&gt;offre-&gt;titre,
+                    );
+                    }
+
+                    <span class="comment">// 3. CONTENT - Définit le template et les données</span>
+                    <span class="keyword">public function</span> <span class="function">content</span>(): Content
+                    {
+                    <span class="keyword">return new</span> Content(
+                    view: <span class="string">'emails.candidature-acceptee'</span>,
+                    with: [
+                    <span class="string">'stagiaire'</span> =&gt; $this-&gt;stagiaire,
+                    <span class="string">'offre'</span> =&gt; $this-&gt;offre,
+                    <span class="string">'stage'</span> =&gt; $this-&gt;stage,
+                    <span class="string">'encadrant'</span> =&gt; $this-&gt;encadrant,
+                    ]
+                    );
+                    }
+
+                    <span class="comment">// 4. ATTACHMENTS - Pièces jointes (optionnel)</span>
+                    <span class="keyword">public function</span> <span class="function">attachments</span>(): <span
+                        class="keyword">array</span>
+                    {
+                    <span class="keyword">return</span> [];
+                    }
+                    }
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="column-box">
+                    <h4>📦 Propriétés Publiques</h4>
+                    <div class="code-block"><span class="comment">// Accessibles dans le template Blade</span>
+                        <span class="keyword">public</span> $candidature;
+                        <span class="keyword">public</span> $stage;
+                        <span class="keyword">public</span> $encadrant;
+                        <span class="keyword">public</span> $stagiaire;
+                        <span class="keyword">public</span> $offre;
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        Ces propriétés sont automatiquement disponibles dans le template Blade
+                    </p>
+                </div>
+
+                <div class="column-box">
+                    <h4>🎨 Template Blade</h4>
+                    <div class="code-block"><span class="comment">//
+                            resources/views/emails/candidature-acceptee.blade.php</span>
+
+                        &lt;!DOCTYPE html&gt;
+                        &lt;html&gt;
+                        &lt;body&gt;
+                        &lt;h1&gt;Félicitations !&lt;/h1&gt;
+
+                        &lt;p&gt;Bonjour {{ $stagiaire-&gt;user-&gt;name }}&lt;/p&gt;
+
+                        &lt;p&gt;Votre candidature pour
+                        "{{ $offre-&gt;titre }}" a été acceptée.&lt;/p&gt;
+                        &lt;/body&gt;
+                        &lt;/html&gt;</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Comment Envoyer un Email -->
+        <div class="section">
+            <div class="section-title">🚀 Comment Envoyer un Email</div>
+
+            <div class="config-section">
+                <h3>Méthode 1: Envoi Simple</h3>
+                <div class="code-block"><span class="comment">// Dans un Controller</span>
+
+                    <span class="keyword">use</span> Illuminate\Support\Facades\Mail;
+                    <span class="keyword">use</span> App\Mail\CandidatureAcceptee;
+
+                    <span class="comment">// Préparation des données</span>
+                    $candidature = Candidature::<span class="function">find</span>(10);
+                    $stage = Stage::<span class="function">find</span>(5);
+
+                    <span class="comment">// Envoi de l'email</span>
+                    Mail::<span class="function">to</span>($candidature-&gt;stagiaire-&gt;user-&gt;email)
+                    -&gt;<span class="function">send</span>(<span class="keyword">new</span>
+                    CandidatureAcceptee($candidature, $stage));
+
+                    <span class="comment">// ✅ L'email est envoyé immédiatement!</span>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3>Méthode 2: Envoi en File d'Attente (Queue)</h3>
+                <div class="code-block"><span class="comment">// Pour les gros volumes, utiliser les queues</span>
+
+                    Mail::<span class="function">to</span>($email)
+                    -&gt;<span class="function">queue</span>(<span class="keyword">new</span>
+                    CandidatureAcceptee($candidature, $stage));
+
+                    <span class="comment">// L'email sera envoyé en arrière-plan par un worker</span>
+                    <span class="comment">// Avantage: Ne ralentit pas la requête HTTP</span>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3>Méthode 3: Envoi Multiple</h3>
+                <div class="code-block"><span class="comment">// Envoyer à plusieurs destinataires</span>
+
+                    $emails = [<span class="string">'user1@example.com'</span>, <span
+                        class="string">'user2@example.com'</span>];
+
+                    Mail::<span class="function">to</span>($emails)
+                    -&gt;<span class="function">cc</span>(<span class="string">'admin@example.com'</span>) <span
+                        class="comment">// Copie</span>
+                    -&gt;<span class="function">bcc</span>(<span class="string">'archive@example.com'</span>) <span
+                        class="comment">// Copie cachée</span>
+                    -&gt;<span class="function">send</span>(<span class="keyword">new</span> MonEmail());</div>
+            </div>
+        </div>
+
+        <!-- Section 5: Configuration Email -->
+        <div class="section">
+            <div class="section-title">⚙️ Configuration du Système Email</div>
+
+            <div class="config-section">
+                <h3>Fichier: config/mail.php</h3>
+                <div class="code-block"><span class="comment">// Configuration principale</span>
+
+                    <span class="keyword">return</span> [
+                    <span class="comment">// Driver par défaut (smtp, log, array, etc.)</span>
+                    <span class="string">'default'</span> =&gt; env(<span class="string">'MAIL_MAILER'</span>, <span
+                        class="string">'smtp'</span>),
+
+                    <span class="comment">// Configuration SMTP</span>
+                    <span class="string">'mailers'</span> =&gt; [
+                    <span class="string">'smtp'</span> =&gt; [
+                    <span class="string">'transport'</span> =&gt; <span class="string">'smtp'</span>,
+                    <span class="string">'host'</span> =&gt; env(<span class="string">'MAIL_HOST'</span>, <span
+                        class="string">'smtp.mailtrap.io'</span>),
+                    <span class="string">'port'</span> =&gt; env(<span class="string">'MAIL_PORT'</span>, 2525),
+                    <span class="string">'username'</span> =&gt; env(<span class="string">'MAIL_USERNAME'</span>),
+                    <span class="string">'password'</span> =&gt; env(<span class="string">'MAIL_PASSWORD'</span>),
+                    ],
+                    ],
+
+                    <span class="comment">// Adresse expéditrice globale</span>
+                    <span class="string">'from'</span> =&gt; [
+                    <span class="string">'address'</span> =&gt; env(<span class="string">'MAIL_FROM_ADDRESS'</span>,
+                    <span class="string">'noreply@plateforme.com'</span>),
+                    <span class="string">'name'</span> =&gt; env(<span class="string">'MAIL_FROM_NAME'</span>, <span
+                        class="string">'Plateforme de Stages'</span>),
+                    ],
+                    ];
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3>Fichier: .env (Variables d'environnement)</h3>
+                <div class="code-block"><span class="comment"># Configuration email dans .env</span>
+
+                    MAIL_MAILER=smtp
+                    MAIL_HOST=smtp.mailtrap.io
+                    MAIL_PORT=2525
+                    MAIL_USERNAME=your_username
+                    MAIL_PASSWORD=your_password
+                    MAIL_ENCRYPTION=tls
+
+                    MAIL_FROM_ADDRESS=noreply@plateforme.com
+                    MAIL_FROM_NAME="Plateforme de Stages"
+
+                    <span class="comment"># Pour tester en développement, utiliser 'log' pour voir les emails dans
+                        storage/logs/laravel.log</span>
+                    MAIL_MAILER=log
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 6: Tableau Récapitulatif -->
+        <div class="section">
+            <div class="section-title">📊 Tableau Récapitulatif des Emails</div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Classe</th>
+                        <th>Template</th>
+                        <th>Destinataire</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Candidature Acceptée</td>
+                        <td><code>CandidatureAcceptee</code></td>
+                        <td><code>candidature-acceptee.blade.php</code></td>
+                        <td>Stagiaire</td>
+                        <td><span class="badge badge-success">Candidature</span></td>
+                    </tr>
+                    <tr>
+                        <td>Confirmation Candidature</td>
+                        <td><code>CandidatureConfirmation</code></td>
+                        <td><code>candidature-confirmation.blade.php</code></td>
+                        <td>Stagiaire</td>
+                        <td><span class="badge badge-success">Candidature</span></td>
+                    </tr>
+                    <tr>
+                        <td>Candidature Refusée</td>
+                        <td><code>CandidatureRefusee</code></td>
+                        <td><code>candidature-refusee.blade.php</code></td>
+                        <td>Stagiaire</td>
+                        <td><span class="badge badge-success">Candidature</span></td>
+                    </tr>
+                    <tr>
+                        <td>Nouveau Stagiaire</td>
+                        <td><code>NouveauStagiaire</code></td>
+                        <td><code>nouveau-stagiaire.blade.php</code></td>
+                        <td>Encadrant</td>
+                        <td><span class="badge badge-info">Stage</span></td>
+                    </tr>
+                    <tr>
+                        <td>Welcome Encadrant</td>
+                        <td><code>WelcomeEncadrant</code></td>
+                        <td><code>welcome-encadrant.blade.php</code></td>
+                        <td>Encadrant</td>
+                        <td><span class="badge badge-purple">Système</span></td>
+                    </tr>
+                    <tr>
+                        <td>Rapport Déposé</td>
+                        <td><code>RapportDepose</code></td>
+                        <td><code>rapport-depose.blade.php</code></td>
+                        <td>Encadrant</td>
+                        <td><span class="badge badge-warning">Rapport</span></td>
+                    </tr>
+                    <tr>
+                        <td>Rapport Validé</td>
+                        <td><code>RapportValide</code></td>
+                        <td><code>rapport-valide.blade.php</code></td>
+                        <td>Stagiaire</td>
+                        <td><span class="badge badge-warning">Rapport</span></td>
+                    </tr>
+                    <tr>
+                        <td>Rapport à Corriger</td>
+                        <td><code>RapportACorreiger</code></td>
+                        <td><code>rapport-a-corriger.blade.php</code></td>
+                        <td>Stagiaire</td>
+                        <td><span class="badge badge-warning">Rapport</span></td>
+                    </tr>
+                    <tr>
+                        <td>Évaluation Disponible</td>
+                        <td><code>EvaluationDisponible</code></td>
+                        <td><code>evaluation-disponible.blade.php</code></td>
+                        <td>Stagiaire</td>
+                        <td><span class="badge badge-info">Stage</span></td>
+                    </tr>
+                    <tr>
+                        <td>Rappel Fin Stage</td>
+                        <td><code>RappelFinStage</code></td>
+                        <td><code>rappel-fin-stage.blade.php</code></td>
+                        <td>Stagiaire</td>
+                        <td><span class="badge badge-info">Stage</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 7: Bonnes Pratiques -->
+        <div class="section">
+            <div class="section-title">✨ Bonnes Pratiques</div>
+
+            <div class="highlight-box">
+                <h4>💡 Conseils Importants</h4>
+
+                <p><strong>1. Utiliser les Queues pour les Emails</strong></p>
+                <div class="code-block"><span class="comment">// Dans la classe Mailable, ajouter l'interface
+                        ShouldQueue</span>
+                    <span class="keyword">class</span> <span class="function">MonEmail</span> <span
+                        class="keyword">extends</span> Mailable <span class="keyword">implements</span> ShouldQueue
+                    {
+                    <span class="keyword">use</span> Queueable;
+                    <span class="comment">// Maintenant Mail::send() utilisera automatiquement la queue</span>
+                    }
+                </div>
+
+                <p style="margin-top: 15px;"><strong>2. Tester les Emails en Développement</strong></p>
+                <div class="code-block"><span class="comment">// Option 1: Utiliser 'log' driver pour voir dans les
+                        logs</span>
+                    MAIL_MAILER=log
+
+                    <span class="comment">// Option 2: Utiliser Mailtrap.io pour tester sans envoyer réellement</span>
+                    MAIL_MAILER=smtp
+                    MAIL_HOST=smtp.mailtrap.io
+                </div>
+
+                <p style="margin-top: 15px;"><strong>3. Gestion des Erreurs</strong></p>
+                <div class="code-block"><span class="keyword">try</span> {
+                    Mail::<span class="function">to</span>($email)-&gt;<span class="function">send</span>(<span
+                        class="keyword">new</span> MonEmail());
+                    } <span class="keyword">catch</span> (\\Exception $e) {
+                    Log::<span class="function">error</span>(<span class="string">'Erreur envoi email: '</span> .
+                    $e-&gt;getMessage());
+                    <span class="comment">// Gérer l'erreur proprement</span>
+                    }
+                </div>
+
+                <p style="margin-top: 15px;"><strong>4. Templates Responsives</strong></p>
+                <p>Tous les templates Blade utilisent un design responsive pour s'adapter aux mobiles et tablettes.</p>
+            </div>
+        </div>
+
+        <!-- Section 8: Flow Complet -->
+        <div class="section">
+            <div class="section-title">🔄 Flow Complet: Exemple Candidature Acceptée</div>
+
+            <div class="config-section">
+                <h3>Processus Étape par Étape</h3>
+                <div class="code-block"><span class="comment">// 1. CONTROLLER - Admin accepte une candidature</span>
+                    <span class="keyword">public function</span> <span class="function">accept</span>(Request $request,
+                    $id) {
+                    $candidature = Candidature::<span class="function">findOrFail</span>($id);
+
+                    <span class="comment">// 2. Mise à jour BDD</span>
+                    $candidature-&gt;<span class="function">update</span>([<span class="string">'statut'</span> =&gt;
+                    <span class="string">'accepte'</span>]);
+
+                    <span class="comment">// 3. Création du stage</span>
+                    $stage = Stage::<span class="function">create</span>([...]);
+
+                    <span class="comment">// 4. ENVOI EMAIL STAGIAIRE</span>
+                    Mail::<span class="function">to</span>($candidature-&gt;stagiaire-&gt;user-&gt;email)
+                    -&gt;<span class="function">send</span>(<span class="keyword">new</span>
+                    CandidatureAcceptee($candidature, $stage));
+
+                    <span class="comment">// 5. ENVOI EMAIL ENCADRANT</span>
+                    Mail::<span class="function">to</span>($encadrant-&gt;user-&gt;email)
+                    -&gt;<span class="function">send</span>(<span class="keyword">new</span>
+                    NouveauStagiaire($candidature-&gt;stagiaire, $stage));
+
+                    <span class="comment">// 6. Notifications in-app</span>
+                    NotificationService::<span class="function">candidatureAcceptee</span>(...);
+                    }
+
+                    <span class="comment">// ✅ Résultat: 2 emails envoyés + 2 notifications créées</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

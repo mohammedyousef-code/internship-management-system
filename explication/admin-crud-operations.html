@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin CRUD Operations - Documentation Détaillée</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .crud-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .crud-card {
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .crud-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .crud-index {
+            background: linear-gradient(135deg, #0575E6, #021B79);
+        }
+
+        .crud-store {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+
+        .crud-show {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+        }
+
+        .crud-update {
+            background: linear-gradient(135deg, #ee9ca7, #ffdde1);
+            color: #333;
+        }
+
+        .crud-destroy {
+            background: linear-gradient(135deg, #eb3349, #f45c43);
+        }
+
+        .crud-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .code-block .keyword {
+            color: #fc8181;
+        }
+
+        .code-block .string {
+            color: #fbd38d;
+        }
+
+        .code-block .function {
+            color: #63b3ed;
+        }
+
+        .code-block .comment {
+            color: #a0aec0;
+        }
+
+        .entity-section {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .entity-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .flow-step {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: #667eea;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-left: 5px solid #f39c12;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #2d3436;
+        }
+
+        .highlight-box h4 {
+            color: #d63031;
+            margin-bottom: 10px;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+
+        .method-get {
+            background: #0575E6;
+            color: white;
+        }
+
+        .method-post {
+            background: #11998e;
+            color: white;
+        }
+
+        .method-put {
+            background: #ee9ca7;
+            color: #333;
+        }
+
+        .method-patch {
+            background: #f093fb;
+            color: white;
+        }
+
+        .method-delete {
+            background: #eb3349;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .section-title {
+                font-size: 1.4em;
+            }
+
+            .flow-steps {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎯 Admin CRUD Operations</h1>
+        <p class="subtitle">Documentation Détaillée des Opérations CRUD avec Exemples de Code</p>
+
+        <!-- Section: Vue d'ensemble -->
+        <div class="section">
+            <div class="section-title">📊 Vue d'Ensemble des Entités Admin</div>
+            <div class="flow-steps">
+                <div class="flow-step">📋 OFFRES</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">📝 CANDIDATURES</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">👨‍🏫 ENCADRANTS</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">👥 STAGIAIRES</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">🏢 DÉPARTEMENTS</div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🔑 Points Importants</h4>
+                <p>• Toutes les routes admin nécessitent l'authentification (auth:sanctum) et le rôle admin</p>
+                <p>• Chaque CRUD utilise des FormRequests pour la validation</p>
+                <p>• Les réponses sont standardisées avec success, message, et data</p>
+                <p>• Les transactions DB sont utilisées pour les opérations complexes</p>
+            </div>
+        </div>
+
+        <!-- Section 1: OFFRES CRUD -->
+        <div class="section">
+            <div class="section-title">📋 1. CRUD des OFFRES</div>
+
+            <div class="entity-section">
+                <h3>Controller: OffreController</h3>
+                <p><strong>Chemin:</strong> app/Http/Controllers/Admin/OffreController.php</p>
+
+                <div class="crud-grid">
+                    <div class="crud-card crud-index">
+                        <div class="crud-title">📖 INDEX</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/offres</p>
+                        <div class="code-block"><span class="comment">// Liste avec filtres et pagination</span>
+                            <span class="keyword">public function</span> <span class="function">index</span>(Request
+                            $request) {
+                            $query = Offre::<span class="function">with</span>(['departement', 'createur']);
+
+                            <span class="comment">// Filtres: statut, departement_id, search</span>
+                            <span class="keyword">if</span> ($request-&gt;has('statut')) {
+                            $query-&gt;where('statut', $request-&gt;statut);
+                            }
+
+                            $offres = $query-&gt;<span class="function">paginate</span>(15);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'success' =&gt; <span class="keyword">true</span>,
+                            'offres' =&gt; OffreResource::<span class="function">collection</span>($offres)
+                            ]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-store">
+                        <div class="crud-title">➕ STORE</div>
+                        <p><span class="method-badge method-post">POST</span>/api/admin/offres</p>
+                        <div class="code-block"><span class="comment">// Créer une nouvelle offre</span>
+                            <span class="keyword">public function</span> <span
+                                class="function">store</span>(StoreOffreRequest $request) {
+                            $offre = Offre::<span class="function">create</span>([
+                            'titre' =&gt; $request-&gt;titre,
+                            'description' =&gt; $request-&gt;description,
+                            'departement_id' =&gt; $request-&gt;departement_id,
+                            'duree_jours' =&gt; $request-&gt;duree_jours,
+                            'created_by' =&gt; <span class="function">auth</span>()-&gt;id()
+                            ]);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'success' =&gt; <span class="keyword">true</span>,
+                            'message' =&gt; <span class="string">'Offre créée avec succès'</span>,
+                            'offre' =&gt; <span class="keyword">new</span> OffreResource($offre)
+                            ], 201);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-show">
+                        <div class="crud-title">👁️ SHOW</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/offres/{id}</p>
+                        <div class="code-block"><span class="comment">// Afficher une offre avec relations</span>
+                            <span class="keyword">public function</span> <span class="function">show</span>($id) {
+                            $offre = Offre::<span class="function">with</span>([
+                            'departement',
+                            'createur',
+                            'candidatures.stagiaire.user'
+                            ])-&gt;<span class="function">findOrFail</span>($id);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'success' =&gt; <span class="keyword">true</span>,
+                            'offre' =&gt; <span class="keyword">new</span> OffreResource($offre)
+                            ]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-update">
+                        <div class="crud-title">✏️ UPDATE</div>
+                        <p><span class="method-badge method-put">PUT</span>/api/admin/offres/{id}</p>
+                        <div class="code-block"><span class="comment">// Modifier une offre</span>
+                            <span class="keyword">public function</span> <span
+                                class="function">update</span>(UpdateOffreRequest $request, $id) {
+                            $offre = Offre::<span class="function">findOrFail</span>($id);
+                            $offre-&gt;<span class="function">update</span>($request-&gt;<span
+                                class="function">validated</span>());
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'success' =&gt; <span class="keyword">true</span>,
+                            'message' =&gt; <span class="string">'Offre modifiée'</span>,
+                            'offre' =&gt; <span class="keyword">new</span> OffreResource($offre)
+                            ]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-destroy">
+                        <div class="crud-title">🗑️ DESTROY</div>
+                        <p><span class="method-badge method-delete">DELETE</span>/api/admin/offres/{id}</p>
+                        <div class="code-block"><span class="comment">// Supprimer avec vérification</span>
+                            <span class="keyword">public function</span> <span class="function">destroy</span>($id) {
+                            $offre = Offre::<span class="function">findOrFail</span>($id);
+
+                            <span class="comment">// Vérifier candidatures existantes</span>
+                            <span class="keyword">if</span> ($offre-&gt;candidatures()-&gt;exists()) {
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'success' =&gt; <span class="keyword">false</span>,
+                            'message' =&gt; <span class="string">'Offre a des candidatures'</span>
+                            ], 422);
+                            }
+
+                            $offre-&gt;<span class="function">delete</span>();
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'success' =&gt; <span class="keyword">true</span>,
+                            'message' =&gt; <span class="string">'Offre supprimée'</span>
+                            ]);
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>⚡ Opération Spéciale: Changer le Statut</h4>
+                    <div class="code-block"><span
+                            class="method-badge method-patch">PATCH</span>/api/admin/offres/{id}/status
+
+                        <span class="keyword">public function</span> <span class="function">updateStatus</span>(Request
+                        $request, $id) {
+                        $request-&gt;validate([
+                        'statut' =&gt; 'required|in:ouvert,ferme'
+                        ]);
+
+                        $offre = Offre::<span class="function">findOrFail</span>($id);
+                        $offre-&gt;<span class="function">update</span>(['statut' =&gt; $request-&gt;statut]);
+
+                        <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                            class="function">json</span>(['success' =&gt; <span class="keyword">true</span>]);
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: CANDIDATURES CRUD -->
+        <div class="section">
+            <div class="section-title">📝 2. CRUD des CANDIDATURES</div>
+
+            <div class="entity-section">
+                <h3>Controller: CandidatureController</h3>
+                <p><strong>Chemin:</strong> app/Http/Controllers/Admin/CandidatureController.php</p>
+
+                <div class="crud-grid">
+                    <div class="crud-card crud-index">
+                        <div class="crud-title">📖 INDEX</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/candidatures</p>
+                        <div class="code-block"><span class="comment">// Liste avec stats et filtres</span>
+                            <span class="keyword">public function</span> <span class="function">index</span>(Request
+                            $request) {
+                            $query = Candidature::<span class="function">with</span>([
+                            'stagiaire.user',
+                            'offre.departement',
+                            'stage.encadrant.user'
+                            ]);
+
+                            <span class="comment">// Filtres: statut, offre_id, search</span>
+                            $candidatures = $query-&gt;<span class="function">paginate</span>(15);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'candidatures' =&gt; CandidatureResource::<span
+                                class="function">collection</span>($candidatures),
+                            'stats' =&gt; [
+                            'en_attente' =&gt; Candidature::where('statut', 'en_attente')-&gt;count(),
+                            'accepte' =&gt; Candidature::where('statut', 'accepte')-&gt;count(),
+                            ]
+                            ]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-show">
+                        <div class="crud-title">👁️ SHOW</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/candidatures/{id}</p>
+                        <div class="code-block"><span class="comment">// Détails complets</span>
+                            <span class="keyword">public function</span> <span class="function">show</span>($id) {
+                            $candidature = Candidature::<span class="function">with</span>([
+                            'stagiaire.user',
+                            'offre.departement',
+                            'stage.encadrant.user'
+                            ])-&gt;<span class="function">findOrFail</span>($id);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'success' =&gt; <span class="keyword">true</span>,
+                            'candidature' =&gt; <span class="keyword">new</span> CandidatureResource($candidature)
+                            ]);
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>✅ Opération Complexe: ACCEPTER une Candidature</h4>
+                    <p><span class="method-badge method-patch">PATCH</span>/api/admin/candidatures/{id}/accept</p>
+                    <div class="code-block"><span class="comment">// Processus complet avec transaction</span>
+                        <span class="keyword">public function</span> <span
+                            class="function">accept</span>(AcceptCandidatureRequest $request, $id) {
+                        DB::<span class="function">beginTransaction</span>();
+
+                        $candidature = Candidature::<span class="function">with</span>(['stagiaire.user', 'offre'])
+                        -&gt;<span class="function">findOrFail</span>($id);
+
+                        <span class="comment">// 1. Vérifier statut</span>
+                        <span class="keyword">if</span> ($candidature-&gt;statut !== 'en_attente') {
+                        <span class="keyword">return</span> error(<span class="string">'Déjà traitée'</span>);
+                        }
+
+                        <span class="comment">// 2. Vérifier pas de stage en cours</span>
+                        $hasActiveStage = Stage::<span class="function">whereHas</span>('candidature', <span
+                            class="keyword">function</span>($q) {
+                        $q-&gt;where('stagiaire_id', $candidature-&gt;stagiaire_id);
+                        })-&gt;where('statut', 'en_cours')-&gt;exists();
+
+                        <span class="keyword">if</span> ($hasActiveStage) {
+                        <span class="keyword">return</span> error(<span class="string">'Stage déjà en cours'</span>);
+                        }
+
+                        <span class="comment">// 3. Mettre à jour candidature</span>
+                        $candidature-&gt;<span class="function">update</span>([
+                        'statut' =&gt; 'accepte',
+                        'date_reponse' =&gt; <span class="function">now</span>()
+                        ]);
+
+                        <span class="comment">// 4. Créer le stage</span>
+                        $stage = Stage::<span class="function">create</span>([
+                        'candidature_id' =&gt; $candidature-&gt;id,
+                        'encadrant_id' =&gt; $request-&gt;encadrant_id,
+                        'statut' =&gt; 'en_cours'
+                        ]);
+
+                        <span class="comment">// 5. Notifications</span>
+                        NotificationService::<span
+                            class="function">candidatureAcceptee</span>($candidature-&gt;stagiaire,
+                        $candidature-&gt;offre);
+                        NotificationService::<span class="function">nouveauStagiaire</span>($encadrant,
+                        $candidature-&gt;stagiaire);
+
+                        <span class="comment">// 6. Emails</span>
+                        Mail::<span class="function">to</span>($candidature-&gt;stagiaire-&gt;user-&gt;email)
+                        -&gt;<span class="function">send</span>(<span class="keyword">new</span>
+                        CandidatureAcceptee($candidature, $stage));
+
+                        DB::<span class="function">commit</span>();
+
+                        <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                            class="function">json</span>(['success' =&gt; <span class="keyword">true</span>]);
+                        }
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>❌ Opération: REFUSER une Candidature</h4>
+                    <p><span class="method-badge method-patch">PATCH</span>/api/admin/candidatures/{id}/reject</p>
+                    <div class="code-block"><span class="keyword">public function</span> <span
+                            class="function">reject</span>($id) {
+                        DB::<span class="function">beginTransaction</span>();
+
+                        $candidature = Candidature::<span class="function">with</span>(['stagiaire.user',
+                        'offre'])-&gt;<span class="function">findOrFail</span>($id);
+
+                        $candidature-&gt;<span class="function">update</span>([
+                        'statut' =&gt; 'refuse',
+                        'date_reponse' =&gt; <span class="function">now</span>()
+                        ]);
+
+                        <span class="comment">// Notification et email</span>
+                        NotificationService::<span class="function">create</span>(...);
+                        Mail::<span class="function">to</span>($candidature-&gt;stagiaire-&gt;user-&gt;email)
+                        -&gt;<span class="function">send</span>(<span class="keyword">new</span>
+                        CandidatureRefusee($candidature));
+
+                        DB::<span class="function">commit</span>();
+                        <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                            class="function">json</span>(['success' =&gt; <span class="keyword">true</span>]);
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: ENCADRANTS CRUD -->
+        <div class="section">
+            <div class="section-title">👨‍🏫 3. CRUD des ENCADRANTS</div>
+
+            <div class="entity-section">
+                <h3>Controller: EncadrantController</h3>
+                <p><strong>Chemin:</strong> app/Http/Controllers/Admin/EncadrantController.php</p>
+
+                <div class="crud-grid">
+                    <div class="crud-card crud-index">
+                        <div class="crud-title">📖 INDEX</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/encadrants</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">index</span>(Request $request) {
+                            $query = Encadrant::<span class="function">with</span>(['user', 'departement'])
+                            -&gt;<span class="function">withCount</span>('stages');
+
+                            <span class="comment">// Filtres: departement_id, search</span>
+                            $encadrants = $query-&gt;<span class="function">paginate</span>(15);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'encadrants' =&gt; EncadrantResource::<span class="function">collection</span>($encadrants)
+                            ]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-store">
+                        <div class="crud-title">➕ STORE</div>
+                        <p><span class="method-badge method-post">POST</span>/api/admin/encadrants</p>
+                        <div class="code-block"><span class="comment">// Créer User + Encadrant</span>
+                            <span class="keyword">public function</span> <span
+                                class="function">store</span>(StoreEncadrantRequest $request) {
+                            DB::<span class="function">beginTransaction</span>();
+
+                            <span class="comment">// Générer mot de passe temporaire</span>
+                            $tempPassword = Str::<span class="function">random</span>(12);
+
+                            <span class="comment">// Créer l'utilisateur</span>
+                            $user = User::<span class="function">create</span>([
+                            'name' =&gt; $request-&gt;name,
+                            'email' =&gt; $request-&gt;email,
+                            'password' =&gt; Hash::<span class="function">make</span>($tempPassword),
+                            'role' =&gt; 'encadrant'
+                            ]);
+
+                            <span class="comment">// Créer le profil encadrant</span>
+                            $encadrant = Encadrant::<span class="function">create</span>([
+                            'user_id' =&gt; $user-&gt;id,
+                            'departement_id' =&gt; $request-&gt;departement_id,
+                            'specialite' =&gt; $request-&gt;specialite
+                            ]);
+
+                            <span class="comment">// Envoyer email avec identifiants</span>
+                            Mail::<span class="function">to</span>($user-&gt;email)
+                            -&gt;<span class="function">send</span>(<span class="keyword">new</span>
+                            WelcomeEncadrant($user, $tempPassword));
+
+                            DB::<span class="function">commit</span>();
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>(['success' =&gt; <span class="keyword">true</span>], 201);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-show">
+                        <div class="crud-title">👁️ SHOW</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/encadrants/{id}</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">show</span>($id) {
+                            $encadrant = Encadrant::<span class="function">with</span>([
+                            'user', 'departement',
+                            'stages.candidature.stagiaire.user'
+                            ])-&gt;<span class="function">withCount</span>('stages')-&gt;<span
+                                class="function">findOrFail</span>($id);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'encadrant' =&gt; <span class="keyword">new</span> EncadrantResource($encadrant)
+                            ]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-update">
+                        <div class="crud-title">✏️ UPDATE</div>
+                        <p><span class="method-badge method-put">PUT</span>/api/admin/encadrants/{id}</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">update</span>(Request $request, $id) {
+                            DB::<span class="function">beginTransaction</span>();
+
+                            $encadrant = Encadrant::<span class="function">findOrFail</span>($id);
+
+                            <span class="comment">// Mettre à jour user</span>
+                            $encadrant-&gt;user-&gt;<span class="function">update</span>($request-&gt;only(['name',
+                            'email']));
+
+                            <span class="comment">// Mettre à jour encadrant</span>
+                            $encadrant-&gt;<span class="function">update</span>($request-&gt;only(['departement_id',
+                            'specialite']));
+
+                            DB::<span class="function">commit</span>();
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>(['success' =&gt; <span class="keyword">true</span>]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-destroy">
+                        <div class="crud-title">🗑️ DESTROY</div>
+                        <p><span class="method-badge method-delete">DELETE</span>/api/admin/encadrants/{id}</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">destroy</span>($id) {
+                            $encadrant = Encadrant::<span class="function">findOrFail</span>($id);
+
+                            <span class="comment">// Vérifier stages en cours</span>
+                            <span class="keyword">if</span> ($encadrant-&gt;stages()-&gt;where('statut',
+                            'en_cours')-&gt;exists()) {
+                            <span class="keyword">return</span> error(<span class="string">'A des stages en
+                                cours'</span>);
+                            }
+
+                            DB::<span class="function">beginTransaction</span>();
+                            $user = $encadrant-&gt;user;
+                            $encadrant-&gt;<span class="function">delete</span>();
+                            $user-&gt;<span class="function">delete</span>();
+                            DB::<span class="function">commit</span>();
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>(['success' =&gt; <span class="keyword">true</span>]);
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: STAGIAIRES CRUD -->
+        <div class="section">
+            <div class="section-title">👥 4. CRUD des STAGIAIRES</div>
+
+            <div class="entity-section">
+                <h3>Controller: StagiaireController</h3>
+                <p><strong>Chemin:</strong> app/Http/Controllers/Admin/StagiaireController.php</p>
+
+                <div class="crud-grid">
+                    <div class="crud-card crud-index">
+                        <div class="crud-title">📖 INDEX</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/stagiaires</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">index</span>(Request $request) {
+                            $query = Stagiaire::<span class="function">with</span>([
+                            'user',
+                            'stage.encadrant.user',
+                            'stage.candidature.offre'
+                            ]);
+
+                            <span class="comment">// Filtres: etablissement, filiere, niveau_etude, search</span>
+                            $stagiaires = $query-&gt;<span class="function">paginate</span>(15);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'stagiaires' =&gt; StagiaireResource::<span class="function">collection</span>($stagiaires)
+                            ]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-show">
+                        <div class="crud-title">👁️ SHOW</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/stagiaires/{id}</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">show</span>($id) {
+                            $stagiaire = Stagiaire::<span class="function">with</span>([
+                            'user',
+                            'candidatures.offre.departement',
+                            'candidatures.stage.encadrant.user',
+                            'candidatures.stage.rapports'
+                            ])-&gt;<span class="function">findOrFail</span>($id);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'stagiaire' =&gt; <span class="keyword">new</span> StagiaireResource($stagiaire)
+                            ]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-destroy">
+                        <div class="crud-title">🗑️ DESTROY</div>
+                        <p><span class="method-badge method-delete">DELETE</span>/api/admin/stagiaires/{id}</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">destroy</span>($id) {
+                            $stagiaire = Stagiaire::<span class="function">findOrFail</span>($id);
+
+                            <span class="comment">// Vérifier stage en cours</span>
+                            <span class="keyword">if</span> ($stagiaire-&gt;stage &amp;&amp;
+                            $stagiaire-&gt;stage-&gt;statut === 'en_cours') {
+                            <span class="keyword">return</span> error(<span class="string">'Stage en cours'</span>);
+                            }
+
+                            DB::<span class="function">beginTransaction</span>();
+
+                            <span class="comment">// Supprimer CV</span>
+                            <span class="keyword">if</span> ($stagiaire-&gt;cv_path) {
+                            Storage::disk('public')-&gt;<span class="function">delete</span>($stagiaire-&gt;cv_path);
+                            }
+
+                            $user = $stagiaire-&gt;user;
+                            $stagiaire-&gt;<span class="function">delete</span>();
+                            $user-&gt;<span class="function">delete</span>();
+
+                            DB::<span class="function">commit</span>();
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>(['success' =&gt; <span class="keyword">true</span>]);
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>⚡ Opération Spéciale: Toggle Status</h4>
+                    <p><span class="method-badge method-patch">PATCH</span>/api/admin/stagiaires/{id}/toggle-status</p>
+                    <div class="code-block"><span class="keyword">public function</span> <span
+                            class="function">toggleStatus</span>($id) {
+                        $stagiaire = Stagiaire::<span class="function">findOrFail</span>($id);
+                        $user = $stagiaire-&gt;user;
+
+                        $user-&gt;<span class="function">update</span>([
+                        'is_active' =&gt; !$user-&gt;is_active
+                        ]);
+
+                        <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                            class="function">json</span>([
+                        'success' =&gt; <span class="keyword">true</span>,
+                        'is_active' =&gt; $user-&gt;is_active
+                        ]);
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: DÉPARTEMENTS CRUD -->
+        <div class="section">
+            <div class="section-title">🏢 5. CRUD des DÉPARTEMENTS</div>
+
+            <div class="entity-section">
+                <h3>Controller: DepartementController</h3>
+                <p><strong>Chemin:</strong> app/Http/Controllers/Admin/DepartementController.php</p>
+
+                <div class="crud-grid">
+                    <div class="crud-card crud-index">
+                        <div class="crud-title">📖 INDEX</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/departements</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">index</span>(Request $request) {
+                            $query = Departement::<span class="function">withCount</span>(['encadrants', 'offres']);
+
+                            <span class="comment">// Support pagination ou tout</span>
+                            <span class="keyword">if</span> ($request-&gt;per_page === 'all') {
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'departements' =&gt; $query-&gt;get()
+                            ]);
+                            }
+
+                            $departements = $query-&gt;<span class="function">paginate</span>(15);
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>(['departements' =&gt; $departements]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-store">
+                        <div class="crud-title">➕ STORE</div>
+                        <p><span class="method-badge method-post">POST</span>/api/admin/departements</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">store</span>(StoreDepartementRequest $request) {
+                            $departement = Departement::<span class="function">create</span>($request-&gt;<span
+                                class="function">validated</span>());
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'success' =&gt; <span class="keyword">true</span>,
+                            'message' =&gt; <span class="string">'Département créé'</span>,
+                            'departement' =&gt; $departement
+                            ], 201);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-show">
+                        <div class="crud-title">👁️ SHOW</div>
+                        <p><span class="method-badge method-get">GET</span>/api/admin/departements/{id}</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">show</span>($id) {
+                            $departement = Departement::<span class="function">withCount</span>(['encadrants',
+                            'offres'])
+                            -&gt;<span class="function">with</span>([
+                            'encadrants.user',
+                            'offres' =&gt; <span class="keyword">function</span>($q) {
+                            $q-&gt;where('statut', 'ouvert')-&gt;take(5);
+                            }
+                            ])-&gt;<span class="function">findOrFail</span>($id);
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>(['departement' =&gt; $departement]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-update">
+                        <div class="crud-title">✏️ UPDATE</div>
+                        <p><span class="method-badge method-put">PUT</span>/api/admin/departements/{id}</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">update</span>(StoreDepartementRequest $request, $id) {
+                            $departement = Departement::<span class="function">findOrFail</span>($id);
+                            $departement-&gt;<span class="function">update</span>($request-&gt;<span
+                                class="function">validated</span>());
+
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>([
+                            'success' =&gt; <span class="keyword">true</span>,
+                            'departement' =&gt; $departement
+                            ]);
+                            }
+                        </div>
+                    </div>
+
+                    <div class="crud-card crud-destroy">
+                        <div class="crud-title">🗑️ DESTROY</div>
+                        <p><span class="method-badge method-delete">DELETE</span>/api/admin/departements/{id}</p>
+                        <div class="code-block"><span class="keyword">public function</span> <span
+                                class="function">destroy</span>($id) {
+                            $departement = Departement::<span class="function">findOrFail</span>($id);
+
+                            <span class="comment">// Vérifications</span>
+                            <span class="keyword">if</span> ($departement-&gt;encadrants()-&gt;exists()) {
+                            <span class="keyword">return</span> error(<span class="string">'A des encadrants'</span>);
+                            }
+                            <span class="keyword">if</span> ($departement-&gt;offres()-&gt;exists()) {
+                            <span class="keyword">return</span> error(<span class="string">'A des offres'</span>);
+                            }
+
+                            $departement-&gt;<span class="function">delete</span>();
+                            <span class="keyword">return</span> <span class="function">response</span>()-&gt;<span
+                                class="function">json</span>(['success' =&gt; <span class="keyword">true</span>]);
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Récapitulative -->
+        <div class="section">
+            <div class="section-title">📌 Récapitulatif des Patterns CRUD</div>
+
+            <div class="highlight-box">
+                <h4>🎯 Patterns Communs</h4>
+                <p><strong>1. Structure de Réponse Standardisée:</strong></p>
+                <div class="code-block">{
+                    <span class="string">"success"</span>: <span class="keyword">true</span>,
+                    <span class="string">"message"</span>: <span class="string">"Message descriptif"</span>,
+                    <span class="string">"data"</span>: { ... },
+                    <span class="string">"pagination"</span>: { ... } <span class="comment">// si applicable</span>
+                    }
+                </div>
+
+                <p><strong>2. Vérifications Avant Suppression:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Offres → Vérifier candidatures existantes</li>
+                    <li>Encadrants → Vérifier stages en cours</li>
+                    <li>Stagiaires → Vérifier stage en cours</li>
+                    <li>Départements → Vérifier encadrants et offres</li>
+                </ul>
+
+                <p><strong>3. Transactions DB:</strong></p>
+                <p>Utilisées pour les opérations qui modifient plusieurs tables (Encadrants, Candidatures)</p>
+
+                <p><strong>4. Relations Eager Loading:</strong></p>
+                <p>Toujours charger les relations avec <code>with()</code> pour éviter le problème N+1</p>
+
+                <p><strong>5. Filtrage et Recherche:</strong></p>
+                <p>Tous les INDEX supportent des filtres via query parameters</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
